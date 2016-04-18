@@ -1,0 +1,62 @@
+makeCacheMatrix <‐ function(x = matrix()) {
+inv <‐ NULL
+set <‐ function(y) {
+x <<‐ y
+inv <<‐ NULL
+}
+get <‐ function() x
+setInverse <‐ function(inverse) inv <<‐ inverse
+getInverse <‐ function() inv
+list(set = set,
+get = get,
+setInverse = setInverse,
+getInverse = getInverse)
+}
+
+
+cacheSolve <‐ function(x, ...) {
+inv <‐ x$getInverse()
+if (!is.null(inv)) {
+message("getting cached data")
+return(inv)
+}
+mat <‐ x$get()
+inv <‐ solve(mat, ...)
+x$setInverse(inv)
+inv
+}
+
+# Results 
+
+>  my_matrix <- makeCacheMatrix(matrix(1:12, 2, 4))
+>  my_matrix$get()
+     [,1] [,2] [,3] [,4]
+[1,]    1    3    5    7
+[2,]    2    4    6    8
+> 
+>  my_matrix$getInverse()
+NULL
+>  my_matrix$set(matrix(c(8, 4, 2, 8), 2, 2))
+>  my_matrix$get()
+     [,1] [,2]
+[1,]    8    2
+[2,]    4    8
+> 
+>  my_matrix$getInverse()
+NULL
+> 
+>  cacheSolve(my_matrix)
+            [,1]        [,2]
+[1,]  0.14285714 -0.03571429
+[2,] -0.07142857  0.14285714
+> 
+>  cacheSolve(my_matrix)
+getting cached data
+            [,1]        [,2]
+[1,]  0.14285714 -0.03571429
+[2,] -0.07142857  0.14285714
+> 
+>  my_matrix$getInverse()
+            [,1]        [,2]
+[1,]  0.14285714 -0.03571429
+[2,] -0.07142857  0.14285714
